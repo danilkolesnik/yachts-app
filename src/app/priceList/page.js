@@ -18,6 +18,7 @@ const PriceListPage = () => {
     const [formData, setFormData] = useState({
         serviceName: '',
         priceInEuroWithoutVAT: '',
+        unitsOfMeasurement: '',
     });
     const [filteredData, setFilteredData] = useState([]);
     const [search, setSearch] = useState('');
@@ -33,6 +34,11 @@ const PriceListPage = () => {
         {
             name: 'Price in EURO without VAT',
             selector: row => row.priceInEuroWithoutVAT,
+            sortable: true,
+        },
+        {
+            name: 'Units of Measurement',
+            selector: row => row.unitsOfMeasurement,
             sortable: true,
         },
         {
@@ -93,6 +99,7 @@ const PriceListPage = () => {
         setFormData({
             serviceName: row.serviceName,
             priceInEuroWithoutVAT: row.priceInEuroWithoutVAT,
+            unitsOfMeasurement: row.unitsOfMeasurement,
         });
         setEditMode(true);
         setEditId(row.id);
@@ -114,7 +121,7 @@ const PriceListPage = () => {
 
     useEffect(() => {
         const result = data.filter(item => 
-            item.serviceName.toLowerCase().startsWith(search.toLowerCase())
+            item.serviceName.toLowerCase().includes(search.toLowerCase())
         );
         setFilteredData(result);
     }, [search, data]);
@@ -123,6 +130,7 @@ const PriceListPage = () => {
         setFormData({
             serviceName: '',
             priceInEuroWithoutVAT: '',
+            unitsOfMeasurement: '',
         });
         setEditMode(false);
         setEditId(null);
@@ -156,7 +164,12 @@ const PriceListPage = () => {
             ) : (
                 <div className="w-full space-y-6 bg-white rounded shadow-md">
                     <div className="relative flex justify-between mb-4 p-4">
-                        <SearchInput search={search} setSearch={setSearch} filteredData={filteredData} onSearchSelect={handleSearchSelect} />
+                        <SearchInput 
+                            search={search} 
+                            setSearch={setSearch} 
+                            filteredData={filteredData} 
+                            onSearchSelect={handleSearchSelect} 
+                        />
                         <Button onClick={openModal} color="blue">
                             Create
                         </Button>     
@@ -184,6 +197,13 @@ const PriceListPage = () => {
                         label="Price in Euro Without VAT"
                         name="priceInEuroWithoutVAT"
                         value={formData.priceInEuroWithoutVAT}
+                        onChange={handleChange}
+                        required
+                    />
+                    <Input
+                        label="Units of Measurement"
+                        name="unitsOfMeasurement"
+                        value={formData.unitsOfMeasurement}
                         onChange={handleChange}
                         required
                     />

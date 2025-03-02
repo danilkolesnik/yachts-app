@@ -10,6 +10,7 @@ import { URL } from '@/utils/constants';
 import { PencilIcon, TrashIcon } from '@heroicons/react/24/solid';
 import Header from '@/component/header';
 import SearchInput from '@/component/search';
+import { useRouter } from 'next/navigation';
 
 const WarehousePage = () => {
     const [data, setData] = useState([]);
@@ -28,6 +29,7 @@ const WarehousePage = () => {
     const [search, setSearch] = useState('');
     const [editMode, setEditMode] = useState(false);
     const [editId, setEditId] = useState(null);
+    const router = useRouter();
 
     const columns = [
         {
@@ -157,9 +159,9 @@ const WarehousePage = () => {
 
     useEffect(() => {
         const result = data.filter(item => 
-            item.name.toLowerCase().startsWith(search.toLowerCase()) ||
-            item.countryCode.toLowerCase().startsWith(search.toLowerCase()) ||
-            item.serviceCategory.serviceName.toLowerCase().startsWith(search.toLowerCase())
+            (item.name && item.name.toLowerCase().includes(search.toLowerCase())) ||
+            (item.countryCode && item.countryCode.toLowerCase().includes(search.toLowerCase())) ||
+            (item.serviceCategory.serviceName && item.serviceCategory.serviceName.toLowerCase().includes(search.toLowerCase()))
         );
         setFilteredData(result);
     }, [search, data]);
@@ -198,6 +200,10 @@ const WarehousePage = () => {
         setFilteredData([item]);
     };
 
+    const handleHistoryClick = () => {
+        router.push('/warehouseHistory');
+    };
+
     return (
         <>
         <Header />
@@ -210,9 +216,14 @@ const WarehousePage = () => {
                 <div className="w-full space-y-6 bg-white rounded shadow-md">
                     <div className="relative flex justify-between mb-4 p-4">
                         <SearchInput search={search} setSearch={setSearch} filteredData={filteredData} onSearchSelect={handleSearchSelect} />
-                        <Button onClick={openModal} color="blue">
-                            Create
-                        </Button>     
+                        <div className="flex space-x-4">
+                            <Button onClick={openModal} color="blue">
+                                Create
+                            </Button>
+                            <Button onClick={handleHistoryClick} color="green">
+                                View History
+                            </Button>
+                        </div>
                     </div>
                     <DataTable
                         columns={columns}

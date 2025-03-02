@@ -7,27 +7,41 @@ import {
   ListItem,
 } from "@material-tailwind/react";
 import {
-  HomeIcon,
   ArchiveBoxIcon,
   LockClosedIcon,
   CurrencyDollarIcon,
+  DocumentTextIcon,
+  UserIcon
 } from "@heroicons/react/24/solid";
 import Link from 'next/link'
 
 function NavList() {
   return (
     <List className="flex flex-row p-0">
-      {/* <Typography
-     
+      <Typography
+          variant="small"
+          color="black"
+          className="font-medium"
+      >
+            <Link href="/orders">
+              <ListItem className="flex items-center gap-2 py-2 pr-4">
+                  <ArchiveBoxIcon className="h-5 w-5 mr-2" />
+                  Orders
+              </ListItem>
+          </Link>
+      </Typography>
+      <Typography
         variant="small"
         color="black"
         className="font-medium"
       >
-        <ListItem className="flex items-center gap-2 py-2 pr-4">
-          <HomeIcon className="h-5 w-5 mr-2" />
-          Home
-        </ListItem>
-      </Typography> */}
+        <Link href="/offers">
+          <ListItem className="flex items-center gap-2 py-2 pr-4">
+            <DocumentTextIcon className="h-5 w-5 mr-2" />
+            Offers
+          </ListItem>
+        </Link>
+      </Typography>
       <Typography
         variant="small"
         color="black"
@@ -49,6 +63,18 @@ function NavList() {
           <ListItem className="flex items-center gap-2 py-2 pr-4">
             <CurrencyDollarIcon className="h-5 w-5 mr-2" />
             Price List
+          </ListItem>
+        </Link>
+      </Typography>
+      <Typography
+        variant="small"
+        color="black"
+        className="font-medium"
+      >
+        <Link href="/users">
+          <ListItem className="flex items-center gap-2 py-2 pr-4">
+            <UserIcon className="h-5 w-5 mr-2" />
+            Users
           </ListItem>
         </Link>
       </Typography>

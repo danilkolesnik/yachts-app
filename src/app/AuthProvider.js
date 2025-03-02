@@ -3,10 +3,12 @@ import { useEffect } from 'react';
 import axios from 'axios';
 import { URL } from '@/utils/constants';
 import { useAppDispatch } from '@/lib/hooks';
-import { setEmail,setRole } from '@/lib/features/todos/usersDataSlice';
+import { useRouter } from 'next/navigation';
+import { setEmail,setRole,setId } from '@/lib/features/todos/usersDataSlice';
 
 const AuthProvider = ({ children }) => {
   const dispatch = useAppDispatch();
+  const router = useRouter()
 
   const verifyUser = async () => {
     try {
@@ -21,6 +23,8 @@ const AuthProvider = ({ children }) => {
         if (response.data.code === 200) {
           return response.data.data;
         }
+      }else{
+        router.push('/auth/login')
       }
     } catch (error) {
       console.log(error);
@@ -30,15 +34,14 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
     verifyUser()
       .then(res => {
-        console.log(res);
-        
         if (res) {
           dispatch(setEmail(res.email));
           dispatch(setRole(res.role));
+          dispatch(setId(res.id));
         }
       });
 
-  }, [dispatch]);
+  },[]);
 
   return <>{children}</>;
 };
