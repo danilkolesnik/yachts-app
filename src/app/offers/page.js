@@ -172,7 +172,7 @@ const OfferPage = () => {
 
     const getUsers = async () => {
         try {
-            const res = await axios.get(`${URL}/users`);
+            const res = await axios.get(`${URL}/users/role/user`);
             return res.data.data;
         } catch (error) {
             console.error(error);
