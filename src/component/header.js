@@ -16,6 +16,11 @@ import {
 import Link from 'next/link'
 
 function NavList() {
+
+  const clearLocalStorage = () => {
+    localStorage.clear();
+  }
+
   return (
     <List className="flex flex-row p-0">
       <Typography
@@ -83,7 +88,7 @@ function NavList() {
         color="black"
         className="font-medium"
       >
-        <Link href="/auth/login">
+        <Link href="/auth/login" onClick={clearLocalStorage}>
           <ListItem className="flex items-center gap-2 py-2 pr-4">
            <LockClosedIcon className="h-5 w-5 mr-2" />
             Auth

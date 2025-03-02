@@ -1,13 +1,17 @@
 "use client"
 import React, { useState } from 'react';
 import { URL } from '@/utils/constants';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import axios from 'axios';
 
 const Register = () => {
+    const router = useRouter();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [fullName, setFullName] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     const handleSubmit = async(e) => {
         e.preventDefault();
@@ -17,10 +21,17 @@ const Register = () => {
             return;
         }
 
-        await axios.post(`${URL}/auth/register`, { email, password })
+        await axios.post(`${URL}/auth/register`, { email, password, fullName })
             .then((res) => {
-                console.log(res.data);
+                if (res.data.code === 409) {
+                    setErrorMessage('This user already exists.');
+                } else {
+                    router.push('/auth/login');
+                }
             })
+            .catch((error) => {
+                setErrorMessage('Network error. Please try again later.');
+            });
 
     };
 
@@ -34,9 +45,12 @@ const Register = () => {
                         <input
                             type="email"
                             value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            onChange={(e) => {
+                                setEmail(e.target.value);
+                                if (errorMessage) setErrorMessage('');
+                            }}
                             required
-                            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-200 text-black"
+                            className={`w-full px-3 py-2 border ${errorMessage ? 'border-red-500' : 'border-gray-300'} rounded focus:outline-none focus:ring focus:ring-blue-200 text-black`}
                         />
                     </div>
                     <div className="form-group">
@@ -44,9 +58,12 @@ const Register = () => {
                         <input
                             type="password"
                             value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            onChange={(e) => {
+                                setPassword(e.target.value);
+                                if (errorMessage) setErrorMessage('');
+                            }}
                             required
-                            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-200 text-black"
+                            className={`w-full px-3 py-2 border ${errorMessage ? 'border-red-500' : 'border-gray-300'} rounded focus:outline-none focus:ring focus:ring-blue-200 text-black`}
                         />
                     </div>
                     <div className="form-group">
@@ -54,11 +71,32 @@ const Register = () => {
                         <input
                             type="password"
                             value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            onChange={(e) => {
+                                setConfirmPassword(e.target.value);
+                                if (errorMessage) setErrorMessage('');
+                            }}
                             required
-                            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-200 text-black"
+                            className={`w-full px-3 py-2 border ${errorMessage ? 'border-red-500' : 'border-gray-300'} rounded focus:outline-none focus:ring focus:ring-blue-200 text-black`}
                         />
                     </div>
+                    <div className="form-group">
+                        <label className="block text-sm font-medium text-black">Full Name:</label>
+                        <input
+                            type="text"
+                            value={fullName}
+                            onChange={(e) => {
+                                setFullName(e.target.value);
+                                if (errorMessage) setErrorMessage('');
+                            }}
+                            required
+                            className={`w-full px-3 py-2 border ${errorMessage ? 'border-red-500' : 'border-gray-300'} rounded focus:outline-none focus:ring focus:ring-blue-200 text-black`}
+                        />
+                    </div>
+                    {errorMessage && (
+                        <div className="text-red-500 text-sm mt-1">
+                            {errorMessage}
+                        </div>
+                    )}
                     <button
                         type="submit"
                         className="w-full px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-200"
