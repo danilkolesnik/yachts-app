@@ -102,7 +102,9 @@ const OfferPage = () => {
         },
         {
             name: 'Parts',
-            selector: row => row.parts.name,
+            selector: row => Array.isArray(row.parts) 
+                ? row.parts.map(part => part.label).join(', ') 
+                : 'N/A',
             sortable: true,
         },
         {
@@ -230,15 +232,16 @@ const OfferPage = () => {
     };
 
     const handleEdit = (row) => {
-        setFormData({
+        setSelectedRow({
+            id: row.id,
             customerFullName: row.customerFullName,
             yachtName: row.yachtName,
             yachtModel: row.yachtModel,
-            comment: row.comment,
             countryCode: row.countryCode,
-            services: row.services.serviceName,
-            parts: row.parts.name,
-            status: row.status
+            status: row.status,
+            services: row.services,
+            parts: row.parts,
+            // Add more fields as needed
         });
         setEditMode(true);
         setEditId(row.id);
@@ -335,7 +338,7 @@ const OfferPage = () => {
         }
 
         try {
-            const response = await axios.post(`${URL}/order/create`, {
+            const response = await axios.post(`${URL}/orders/create`, {
                 userId: createOrderFormData,
                 offerId: id,
                 customerId,
@@ -343,6 +346,7 @@ const OfferPage = () => {
 
             console.log("Заказ успешно создан:", response.data);
             closeCreateOrderModal();
+            router.push('/orders');
         } catch (error) {
             console.error("Ошибка при создании заказа:", error.response ? error.response.data : error.message);
         }

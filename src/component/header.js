@@ -2,7 +2,6 @@
 import React from 'react';
 import {
   Navbar,
-  Typography,
   List,
   ListItem,
 } from "@material-tailwind/react";
@@ -23,78 +22,42 @@ function NavList() {
 
   return (
     <List className="flex flex-row p-0">
-      <Typography
-          variant="small"
-          color="black"
-          className="font-medium"
-      >
-            <Link href="/orders">
-              <ListItem className="flex items-center gap-2 py-2 pr-4">
-                  <ArchiveBoxIcon className="h-5 w-5 mr-2" />
-                  Orders
-              </ListItem>
-          </Link>
-      </Typography>
-      <Typography
-        variant="small"
-        color="black"
-        className="font-medium"
-      >
-        <Link href="/offers">
-          <ListItem className="flex items-center gap-2 py-2 pr-4">
-            <DocumentTextIcon className="h-5 w-5 mr-2" />
-            Offers
-          </ListItem>
-        </Link>
-      </Typography>
-      <Typography
-        variant="small"
-        color="black"
-        className="font-medium"
-      >
-        <Link href="/warehouse">
-          <ListItem className="flex items-center gap-2 py-2 pr-4">
-            <ArchiveBoxIcon className="h-5 w-5 mr-2" />
-            Warehouse
-          </ListItem>
-          </Link>
-      </Typography>
-      <Typography
-        variant="small"
-        color="black"
-        className="font-medium"
-      >
-        <Link href="/priceList">
-          <ListItem className="flex items-center gap-2 py-2 pr-4">
-            <CurrencyDollarIcon className="h-5 w-5 mr-2" />
-            Price List
-          </ListItem>
-        </Link>
-      </Typography>
-      <Typography
-        variant="small"
-        color="black"
-        className="font-medium"
-      >
-        <Link href="/users">
-          <ListItem className="flex items-center gap-2 py-2 pr-4">
-            <UserIcon className="h-5 w-5 mr-2" />
-            Users
-          </ListItem>
-        </Link>
-      </Typography>
-      <Typography
-        variant="small"
-        color="black"
-        className="font-medium"
-      >
-        <Link href="/auth/login" onClick={clearLocalStorage}>
-          <ListItem className="flex items-center gap-2 py-2 pr-4">
-           <LockClosedIcon className="h-5 w-5 mr-2" />
-            Auth
-          </ListItem>
-        </Link>
-      </Typography>
+      <Link href="/orders">
+        <ListItem className="flex items-center gap-2 py-2 pr-4 font-medium text-black">
+          <ArchiveBoxIcon className="h-5 w-5 mr-2" />
+          <span>Orders</span>
+        </ListItem>
+      </Link>
+      <Link href="/offers">
+        <ListItem className="flex items-center gap-2 py-2 pr-4 font-medium text-black">
+          <DocumentTextIcon className="h-5 w-5 mr-2" />
+          <span>Offers</span>
+        </ListItem>
+      </Link>
+      <Link href="/warehouse">
+        <ListItem className="flex items-center gap-2 py-2 pr-4 font-medium text-black">
+          <ArchiveBoxIcon className="h-5 w-5 mr-2" />
+          <span>Warehouse</span>
+        </ListItem>
+      </Link>
+      <Link href="/priceList">
+        <ListItem className="flex items-center gap-2 py-2 pr-4 font-medium text-black">
+          <CurrencyDollarIcon className="h-5 w-5 mr-2" />
+          <span>Price List</span>
+        </ListItem>
+      </Link>
+      <Link href="/users">
+        <ListItem className="flex items-center gap-2 py-2 pr-4 font-medium text-black">
+          <UserIcon className="h-5 w-5 mr-2" />
+          <span>Users</span>
+        </ListItem>
+      </Link>
+      <Link href="/auth/login" onClick={clearLocalStorage}>
+        <ListItem className="flex items-center gap-2 py-2 pr-4 font-medium text-black">
+          <LockClosedIcon className="h-5 w-5 mr-2" />
+          <span>Auth</span>
+        </ListItem>
+      </Link>
     </List>
   );
 }
