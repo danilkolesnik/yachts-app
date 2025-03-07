@@ -12,6 +12,7 @@ import Modal from '@/ui/Modal';
 import { statusStyles } from '@/utils/statusStyles';
 
 const OrderPage = () => {
+
     const [orders, setOrders] = useState([]);
     const [filters, setFilters] = useState({
         status: '',
@@ -29,13 +30,14 @@ const OrderPage = () => {
     const [statusOptions, setStatusOptions] = useState(null);
 
     const fetchOrders = async () => {
-        if (!id) {
-            console.error('User ID is not defined');
-            setLoading(false);
-            return;
-        }
+
         try {
-            const response = await axios.get(`${URL}/orders/user/${id}`);
+            const token = localStorage.getItem('token');
+            const response = await axios.get(`${URL}/orders`,{
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             setOrders(response.data.data || []);
             return response.data.data;
         } catch (error) {

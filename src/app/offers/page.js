@@ -422,7 +422,7 @@ const OfferPage = () => {
                     </div>
                 )}
                 <Modal isOpen={modalIsOpen} onClose={closeModal} title={editMode ? "Edit" : "Create"}>
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                    <form onSubmit={handleSubmit} className="space-y-4 overflow-y-auto h-96">
                         <ReactSelect
                             options={userOptions}
                             onChange={selectedOption => setFormData({ ...formData, customerFullName: selectedOption ? selectedOption.label : '' })}

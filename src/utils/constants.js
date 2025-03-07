@@ -1,1 +1,1 @@
-export const URL = 'https://g000l4c6-3002.euw.devtunnels.ms';
+export const URL = 'http://localhost:3002';
