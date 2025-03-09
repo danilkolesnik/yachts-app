@@ -12,6 +12,7 @@ import { useAppSelector } from '@/lib/hooks';
 import Header from '@/component/header';
 import { useRouter } from 'next/navigation';
 import ReactSelect from 'react-select';
+import Link from 'next/link';
 
 const OfferPage = () => {
     const router = useRouter();
@@ -62,7 +63,11 @@ const OfferPage = () => {
     const columns = [
         {
             name: 'ID',
-            selector: row => row.id,
+            selector: row => (
+                <Link href={`/offers/${row.id}`} className="text-black">
+                    <div className="text-blue-500 hover:underline">{row.id}</div>
+                </Link>
+            ),
             sortable: true,
         },
         {
@@ -241,7 +246,6 @@ const OfferPage = () => {
             status: row.status,
             services: row.services,
             parts: row.parts,
-            // Add more fields as needed
         });
         setEditMode(true);
         setEditId(row.id);

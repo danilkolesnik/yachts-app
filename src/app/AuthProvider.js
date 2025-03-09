@@ -38,9 +38,9 @@ const AuthProvider = ({ children }) => {
           dispatch(setEmail(res.email));
           dispatch(setRole(res.role));
           dispatch(setId(res.id));
+          localStorage.setItem('role', res.role);
         }
       });
-
   },[]);
 
   return <>{children}</>;

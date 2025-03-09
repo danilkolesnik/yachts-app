@@ -17,6 +17,15 @@ const Login = () => {
             const response = await axios.post(`${URL}/auth/login`, { email, password });
             if (response.data.code === 200) {
                 localStorage.setItem('token', response.data.token);
+                
+                const verifyResponse = await axios.post(`${URL}/auth/verify`, {}, {
+                    headers: {
+                        Authorization: `Bearer ${response.data.token}`,
+                    },
+                });
+                if (verifyResponse.data.code === 200) {
+                    localStorage.setItem('role', verifyResponse.data.data.role);
+                }
                 router.push('/offers');
             } else {
                 setErrorMessage('Incorrect email or password.');
