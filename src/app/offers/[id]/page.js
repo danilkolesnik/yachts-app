@@ -2,15 +2,18 @@
 import React, { use, useState, useEffect } from 'react';
 import axios from 'axios';
 import { URL } from '@/utils/constants';
+import { XMarkIcon } from '@heroicons/react/24/solid';
 import Header from '@/component/header';
 import Loader from '@/ui/loader';
 import Image from 'next/image';
 
 const OfferDetail = ({ params }) => {
-    const { id } = use(params); // Unwrap the params Promise
+    const { id } = use(params);
     const [offer, setOffer] = useState(null);
     const [selectedFile, setSelectedFile] = useState(null);
     const [uploading, setUploading] = useState(false);
+
+    const role = localStorage.getItem('role');
 
     useEffect(() => {
         if (id) {
@@ -32,7 +35,7 @@ const OfferDetail = ({ params }) => {
 
         setUploading(true);
         try {
-            const response = await axios.post(`http://localhost:3002/upload/${id}`, formData, {
+            const response = await axios.post(`${URL}/upload/${id}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -50,19 +53,16 @@ const OfferDetail = ({ params }) => {
     };
 
     const handleDelete = async (url) => {
-        console.log(url);
         try {
-          await axios.post('http://localhost:3002/upload/delete', { url: encodeURIComponent(url) })
-            .then(res => console.log(res));
-      
-          setOffer((prevOffer) => ({
-            ...prevOffer,
-            imageUrls: prevOffer.imageUrls.filter((imageUrl) => imageUrl !== url),
-          }));
+            await axios.post(`${URL}/upload/delete`, { url: url, offerId: id });
+            setOffer((prevOffer) => ({
+                ...prevOffer,
+                imageUrls: prevOffer.imageUrls.filter((imageUrl) => imageUrl !== url),
+            }));
         } catch (error) {
-          console.error('Error deleting image:', error);
+            console.error('Error deleting image:', error);
         }
-      };
+    };
 
     if (!offer) {
         return (
@@ -75,55 +75,72 @@ const OfferDetail = ({ params }) => {
     return (
         <div className="min-h-screen bg-gray-100">
             <Header />
-            <div className="max-w-4xl mx-auto p-8 bg-white shadow-md rounded">
-                <h1 className="text-3xl font-bold mb-4">Offer Details</h1>
-                <div className="space-y-4">
-                    <div className="flex justify-between">
-                        <span className="font-medium text-gray-700">ID:</span>
+            <div className="max-w-4xl mx-auto p-8 bg-white shadow-lg rounded-lg">
+                <h1 className="text-4xl font-extrabold mb-6 text-black">Offer Details</h1>
+                <div className="space-y-6">
+                    <div className="flex items-center">
+                        <span className="font-semibold text-gray-800 pr-2">ID:</span>
                         <span className="text-black">{offer.id}</span>
                     </div>
-                    <div className="flex justify-between">
-                        <span className="font-medium text-gray-700">Customer:</span>
+                    <div className="flex items-center">
+                        <span className="font-semibold text-gray-800 pr-2">Customer:</span>
                         <span className="text-black">{offer.customerFullName}</span>
                     </div>
-                    <div className="flex justify-between">
-                        <span className="font-medium text-gray-700">Yacht Name:</span>
+                    <div className="flex items-center">
+                        <span className="font-semibold text-gray-800 pr-2">Yacht Name:</span>
                         <span className="text-black">{offer.yachtName}</span>
                     </div>
                 </div>
-                <div className="mt-8">
-                    <h2 className="text-2xl font-bold mb-4">Before</h2>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                        {offer.imageUrls.map((url, index) => (
-                            <div key={index} className="relative">
-                                <Image
-                                    src={url}
-                                    alt={`Offer Image ${index + 1}`}
-                                    width={500}
-                                    height={300}
-                                    className="w-full h-auto rounded shadow"
-                                />
-                                <button
-                                    onClick={() => handleDelete(url)}
-                                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-700"
-                                >
-                                    &times;
-                                </button>
-                            </div>
-                        ))}
+                {offer.imageUrls.length > 0 && (
+                    <div className="mt-10">
+                        <h2 className="text-3xl font-bold mb-6 text-black">Before:</h2>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                            {offer.imageUrls.map((url, index) => (
+                                <div key={index} className="relative group">
+                                    <Image
+                                        src={url}
+                                        alt={`Offer Image ${index + 1}`}
+                                        width={500}
+                                        height={300}
+                                        className="w-full h-auto rounded-lg shadow-md transition-transform transform group-hover:scale-105"
+                                    />
+                                    {role != 'user' &&(
+                                        <button
+                                            onClick={() => handleDelete(url)}
+                                            className="absolute top-1 right-1  text-black rounded-full p-2 transition-colors"
+                                        >
+                                            <XMarkIcon className="w-6 h-6 bg-white rounded-full p-1" />
+                                        </button>
+                                    )}
+                                    
+                                </div>
+                            ))}
+                        </div>
                     </div>
-                </div>
-                <div className="mt-8">
-                    <h2 className="text-2xl font-bold mb-4">Upload New Image</h2>
-                    <input type="file" onChange={handleFileChange} />
+                )}
+                {role != 'user' && (
+                    <div className="mt-10">
+                    <h2 className="text-3xl font-bold mb-6 text-black">Upload New Image</h2>
+                    <input 
+                        type="file" 
+                        onChange={handleFileChange} 
+                        className="text-sm text-stone-500
+                        file:mr-5 file:py-1 file:px-3 file:border-[1px]
+                        file:text-xs file:font-medium
+                        file:bg-stone-50 file:text-stone-700
+                        hover:file:cursor-pointer hover:file:bg-blue-50
+                        hover:file:text-blue-700"
+                    />
                     <button
                         onClick={handleUpload}
-                        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                        className="mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                         disabled={uploading}
                     >
                         {uploading ? 'Uploading...' : 'Upload'}
                     </button>
                 </div>
+                )}
+                
             </div>
         </div>
     );
