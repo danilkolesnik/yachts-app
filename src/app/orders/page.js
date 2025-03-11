@@ -9,6 +9,7 @@ import { PencilIcon, TrashIcon } from '@heroicons/react/24/solid';
 import Header from '@/component/header';
 import Loader from '@/ui/loader';
 import Modal from '@/ui/Modal';
+import Link from 'next/link';
 import { statusStyles } from '@/utils/statusStyles';
 
 const OrderPage = () => {
@@ -28,6 +29,7 @@ const OrderPage = () => {
     const [editStatusModalIsOpen, setEditStatusModalIsOpen] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [statusOptions, setStatusOptions] = useState(null);
+    const [role] = useState(localStorage.getItem('role'));
 
     const fetchOrders = async () => {
 
@@ -68,7 +70,7 @@ const OrderPage = () => {
 
         return (
             (filters.status ? order.status === filters.status : true) &&
-            (filters.client ? order.offer.customerFullName === filters.client : true) &&
+            (filters.client ? order.offer && order.offer.customerFullName === filters.client : true) &&
             (filterDate ? orderDate.toDateString() === filterDate.toDateString() : true)
         );
     });
@@ -76,8 +78,8 @@ const OrderPage = () => {
     const sortedOrders = filteredOrders.sort((a, b) => {
         if (sortField === 'client') {
             return sortOrder === 'asc' 
-                ? a.offer.customerFullName.localeCompare(b.offer.customerFullName) 
-                : b.offer.customerFullName.localeCompare(a.offer.customerFullName);
+                ? (a.offer ? a.offer.customerFullName : '').localeCompare(b.offer ? b.offer.customerFullName : '') 
+                : (b.offer ? b.offer.customerFullName : '').localeCompare(a.offer ? a.offer.customerFullName : '');
         }
         if (sortField === 'status') {
             return sortOrder === 'asc' 
@@ -136,9 +138,13 @@ const OrderPage = () => {
         { name: 'Creation Date', selector: row => {
             return new Date(row.createdAt).toLocaleString();
         }, sortable: true },
-        { name: 'Order Number', selector: row => row.id, sortable: true },
-        { name: 'Client', selector: row => row.offer.customerFullName, sortable: true },
-        { name: 'Yacht', selector: row => row.offer.yachtName, sortable: true },
+        { name: 'Order Number', selector: row => (
+            <Link href={`/orders/${row.id}`} className="text-black">
+                    <div className="text-blue-500 hover:underline">{row.id}</div>
+            </Link>
+        ), sortable: true },
+        { name: 'Customer', selector: row => row.offer && row.offer.customerFullName ? row.offer.customerFullName : '', sortable: true },
+        { name: 'Yacht', selector: row => row.offer && row.offer.yachtName ? row.offer.yachtName : '', sortable: true },
         { name: 'Responsible', selector: row => Array.isArray(row.assignedWorkers) 
             ? row.assignedWorkers.map(worker => worker.fullName).join(', ') 
             : 'N/A', sortable: true },
@@ -151,7 +157,7 @@ const OrderPage = () => {
                 {row.status}
             </span>
         ) },
-        {
+        ...(role !== 'user' ? [{
             name: 'Actions',
             cell: row => (
                 <div className="flex space-x-2">
@@ -171,7 +177,7 @@ const OrderPage = () => {
             ),
             ignoreRowClick: true,
             button: true.toString(),
-        },
+        }] : []),
     ];
 
     useEffect(() => {

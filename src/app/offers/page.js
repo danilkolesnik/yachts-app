@@ -21,11 +21,13 @@ const OfferPage = () => {
     const [catagoryData, setCatagoryData] = useState([]);
     const [parts, setParts] = useState([]);
     const [users, setUsers] = useState([]);
+    const [workers, setWorkers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [createOrderModalIsOpen, setCreateOrderModalIsOpen] = useState(false);
     const [createServiceModalIsOpen, setCreateServiceModalIsOpen] = useState(false);
     const [createPartModalIsOpen, setCreatePartModalIsOpen] = useState(false);
+    const [role] = useState(localStorage.getItem('role'));
     const [formData, setFormData] = useState({
         customerFullName: '',
         yachtName: '',
@@ -60,6 +62,7 @@ const OfferPage = () => {
     const [editId, setEditId] = useState(null);
     const [selectedRow, setSelectedRow] = useState(null);
     const [userOptions, setUserOptions] = useState([]);
+    const [workerOptions, setWorkerOptions] = useState([]);
 
     const columns = [
         {
@@ -113,7 +116,7 @@ const OfferPage = () => {
                 : 'N/A',
             sortable: true,
         },
-        {
+        ...(role !== 'user' ? [{
             name: 'Actions',
             cell: row => (
                 <div className="flex space-x-2">
@@ -133,8 +136,8 @@ const OfferPage = () => {
             ),
             ignoreRowClick: true,
             button: true.toString(),
-        },
-        {
+        }] : []),
+        ...(role !== 'user' ? [{
             name: '',
             cell: row => (
                 <button
@@ -146,17 +149,19 @@ const OfferPage = () => {
             ),
             ignoreRowClick: true,
             button: true.toString(),
-        },
+        }] : []),
     ];
 
     const getData = async () => {
         try {
-            const res = await axios.get(`${URL}/offer`);
+            const res = await axios.get(`${URL}/offer`,{
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }   
+            });
             return res.data.data;
         } catch (error) {
             console.error(error);
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -181,6 +186,15 @@ const OfferPage = () => {
     const getUsers = async () => {
         try {
             const res = await axios.get(`${URL}/users/role/user`);
+            return res.data.data;
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const getWorkers = async () => {
+        try {
+            const res = await axios.get(`${URL}/users/role/worker`);
             return res.data.data;
         } catch (error) {
             console.error(error);
@@ -371,14 +385,29 @@ const OfferPage = () => {
     };
 
     useEffect(() => {
-        Promise.all([getData(), getDataCatagory(), getWareHouse(), getUsers()])
-            .then(([res1, res2, res3, res4]) => {
+        setLoading(true);
+        Promise.all([getData(), getDataCatagory(), getWareHouse(), getUsers(), getWorkers()])
+            .then(([res1, res2, res3, res4, res5]) => {
                 setData(res1 || []);
                 setCatagoryData(res2 || []);
                 setParts(res3 || []);
                 setUsers(res4 || []);
+                setWorkers(res5 || []);
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            })
+            .finally(() => {
+                setLoading(false);
             });
     }, []);
+
+    useEffect(() => {
+        if (workers.length > 0) {
+            const options = workers.map(worker => ({ value: worker.id, label: worker.fullName }));
+            setWorkerOptions(options);
+        }
+    }, [workers]);
 
     useEffect(() => {
         if (users.length > 0) {
@@ -549,7 +578,7 @@ const OfferPage = () => {
                 <Modal isOpen={createOrderModalIsOpen} onClose={closeCreateOrderModal} title="Create Order">
                     <div className="space-y-4">
                         <ReactSelect
-                            options={userOptions}
+                            options={workerOptions}
                             onChange={selectedOptions => setCreateOrderFormData(selectedOptions || [])}
                             placeholder="Assign Employees..."
                             isClearable
